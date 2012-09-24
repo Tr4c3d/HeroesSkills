@@ -83,10 +83,8 @@ public class SkillSuperCharge extends ActiveSkill
     @EventHandler
     public void onEntityDamage(WeaponDamageEvent event) {
 
-      Heroes.debug.startTask("HeroesSkillListener");
-      if(!(event.getEntity() instanceof Player)) Heroes.debug.stopTask("HeroesSkillListener");
-      else {
-    	  Hero hero = SkillSuperCharge.this.plugin.getCharacterManager().getHero((Player)event.getEntity());
+      if(!(event.isCancelled())&&(event.getDamager() instanceof Hero)){
+    	  Hero hero = (Hero) event.getDamager();
     	  if (hero.hasEffect("SuperChargeBuff")) {
     		  int damage = (int) (SkillConfigManager.getUseSetting(hero, this.skill, Setting.DAMAGE.node(), 5.0, false) +
     	              (SkillConfigManager.getUseSetting(hero, this.skill, Setting.DAMAGE_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
@@ -123,7 +121,6 @@ public class SkillSuperCharge extends ActiveSkill
       SkillSuperCharge.damageEntity((LivingEntity) event.getEntity(), player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
       event.setDamage(damage);
 */
-      Heroes.debug.stopTask("HeroesSkillListener");
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
