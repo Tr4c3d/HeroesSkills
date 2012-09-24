@@ -13,13 +13,8 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
 
 public class SkillSuperCharge extends ActiveSkill
 {
@@ -41,18 +36,13 @@ public class SkillSuperCharge extends ActiveSkill
     ConfigurationSection node = super.getDefaultConfig();
     node.set(Setting.DAMAGE.node(), 5);
     node.set(Setting.DAMAGE_INCREASE.node(), 0);
-    node.set(Setting.DURATION.node(), 1000);
-    node.set("mana-per-shot", 1);
-    node.set("attacks", 1);
     return node;
   }
 
     @Override
   public SkillResult use(Hero hero, String[] args)
   {
-    long duration = SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 1000, false);
-    int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", 1, false);
-    hero.addEffect(new SuperChargeBuff(this, duration, numAttacks));
+    hero.addEffect(new SuperChargeBuff(this));
     broadcastExecuteText(hero);
     return SkillResult.NORMAL;
   }
@@ -65,7 +55,7 @@ public class SkillSuperCharge extends ActiveSkill
 
   public class SuperChargeBuff extends ImbueEffect
   {
-    public SuperChargeBuff(Skill skill, long duration, int numAttacks)
+    public SuperChargeBuff(Skill skill)
     {
       super(skill, "SuperChargeBuff");
       this.types.add(EffectType.HARMFUL);
@@ -93,48 +83,6 @@ public class SkillSuperCharge extends ActiveSkill
     		  hero.getPlayer().sendMessage("hello");
     		  hero.removeEffect(hero.getEffect("SuperChargeBuff"));
     	  }
-      }
-      /*if ((event.isCancelled()) || (!(event instanceof EntityDamageByEntityEvent))) {
-        Heroes.debug.stopTask("HeroesSkillListener");
-        return;
-      }*/
-
-      //Entity projectile = (Entity) ((WeaponDamageEvent)event).getDamager();
-
-      /*if ((!(projectile instanceof Arrow)) || (!(((Projectile)projectile).getShooter() instanceof Player))) {
-        Heroes.debug.stopTask("HeroesSkillListener");
-        return;
-      }*/
-
-      /*Player player = (Player)((Projectile)projectile).getShooter();
-      Hero hero = SkillSuperCharge.this.plugin.getCharacterManager().getHero(player);
-      
-      if (!hero.hasEffect("SuperChargeBuff")) {
-        Heroes.debug.stopTask("HeroesSkillListener");
-        return;
-      }
-      
-      int damage = (int) (SkillConfigManager.getUseSetting(hero, this.skill, Setting.DAMAGE.node(), 5.0, false) +
-              (SkillConfigManager.getUseSetting(hero, this.skill, Setting.DAMAGE_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
-      damage = damage > 0 ? damage : 0;
-      
-      SkillSuperCharge.damageEntity((LivingEntity) event.getEntity(), player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
-      event.setDamage(damage);
-*/
-    }
-
-    @EventHandler(priority=EventPriority.MONITOR)
-    public void onEntityShootBow(EntityShootBowEvent event) {
-      if ((event.isCancelled()) || (!(event.getEntity() instanceof Player)) || (!(event.getProjectile() instanceof Arrow))) {
-        return;
-      }
-      Hero hero = SkillSuperCharge.this.plugin.getCharacterManager().getHero((Player)event.getEntity());
-      if (hero.hasEffect("SuperChargeBuff")) {
-        int mana = SkillConfigManager.getUseSetting(hero, this.skill, "mana-per-shot", 1, true);
-        if (hero.getMana() < mana)
-          hero.removeEffect(hero.getEffect("SuperChargeBuff"));
-        else
-          hero.setMana(hero.getMana() - mana);
       }
     }
   }
