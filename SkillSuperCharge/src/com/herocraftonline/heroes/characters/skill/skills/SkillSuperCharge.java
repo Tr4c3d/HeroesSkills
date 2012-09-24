@@ -80,7 +80,6 @@ public class SkillSuperCharge extends ActiveSkill
     	              (SkillConfigManager.getUseSetting(hero, this.skill, Setting.DAMAGE_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
     	      damage = damage > 0 ? damage : 0;
     		  event.setDamage(damage);
-    		  hero.getPlayer().sendMessage("hello");
     		  hero.removeEffect(hero.getEffect("SuperChargeBuff"));
     	  }
       }
