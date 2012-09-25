@@ -1,0 +1,1 @@
+SuperCharge: Make it a Buff skill. Using it makes next arrow be charged.

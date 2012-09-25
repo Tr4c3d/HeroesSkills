@@ -1,0 +1,4 @@
+I would like to thanks some people that made all these skills possible. 
+First of all, I would like to thank, of course, the creators of the Heroes plugin for providing us with such an amazing tool to play and mess with and enchant our experience on minecraft to extreme levels. Please keep up with the outstanding work!
+Second of all, I would like to thank a lot Multitallented, for making his skills open-scourced and making tutorials on the internet on how to make a basic skill. Both things allowed (and still are) to learn more and more. In fact, the main body of all my stills are based on his. Thanks a bunch!
+Last, but, certainly, not least, I would like to thank the bukkit/minecraft community, especially other developers, that are always there to help on both forums whenever starters like me need them. I hope that one day I can pay it back and help people arround with their issues and I hope this colaborative spirit never dies within this community.
