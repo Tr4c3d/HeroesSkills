@@ -1,0 +1,7 @@
+Critical: (Passive) Chance to deal extra damage to target
+FirstAid: Auto-heals a percentage of the hero's health
+Heal: Heals a percentage of target hero's heals
+KickSand: Kicks sand from the gound and deals Earth damage to target. Must be on sand to use it
+Repulse: Pulls all entities arround you away
+SummonArrow: Summons a set amount of arrows
+SuperCharge: Shoots an extra-charged arrow, with more precision and damage to target. Needs to have a bow on inventory to use it
