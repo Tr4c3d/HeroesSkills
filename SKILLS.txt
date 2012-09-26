@@ -5,3 +5,4 @@ KickSand: Kicks sand from the gound and deals Earth damage to target. Must be on
 Repulse: Pulls all entities arround you away
 SummonArrow: Summons a set amount of arrows
 SuperCharge: Shoots an extra-charged arrow
+BlastResistance: (Passive) Absorbs part of explosive damage

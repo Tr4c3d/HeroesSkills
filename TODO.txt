@@ -1,4 +1,6 @@
-SkillSharpShot: Same as SuperCharge but deals percentage damage
-SkillRetrieveArrow: (Passive) Change of retrieving the arrow that killed the target
-BlastResistance: (Passive) Absorbs part of explosive damage
-Lunge: Deals damage to target and pushes it back a few blocks. Must be used with spade in hand
+CREATE:
+    SkillSharpShot: Same as SuperCharge but deals percentage damage
+    SkillRetrieveArrow: (Passive) Change of retrieving the arrow that killed the target
+    Lunge: Deals damage to target and pushes it back a few blocks. Must be used with spade in hand
+MODIFY:
+    BlastResistance: Add interaction with SkillShield to absorve more damage
