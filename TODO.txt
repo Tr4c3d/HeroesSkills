@@ -1,1 +1,4 @@
-SuperCharge: Make it a Buff skill. Using it makes next arrow be charged.
+SkillSharpShot: Same as SuperCharge but deals percentage damage
+SkillRetrieveArrow: (Passive) Change of retrieving the arrow that killed the target
+BlastResistance: (Passive) Absorbs part of explosive damage
+Lunge: Deals damage to target and pushes it back a few blocks. Must be used with spade in hand
