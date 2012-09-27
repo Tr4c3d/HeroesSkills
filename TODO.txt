@@ -1,5 +1,4 @@
 CREATE:
-    Lunge: Deals damage to target and pushes it back a few blocks. Must be used with spade in hand
     Sell: Sells item in hand for given value
     HeavyCoins: Uses money to deal damage to target
 MODIFY:
