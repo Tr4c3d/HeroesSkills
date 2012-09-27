@@ -7,3 +7,4 @@ SummonArrow: Summons a set amount of arrows
 SuperCharge: Shoots an extra-charged arrow
 BlastResistance: (Passive) Absorbs part of explosive damage
 SkillSharpShot: Same as SuperCharge but deals percentage damage and has chance to deal twice as much and stun
+SkillRetrieveArrow: (Passive) Chance of retrieving the arrow that killed the target

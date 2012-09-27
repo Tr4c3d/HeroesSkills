@@ -11,14 +11,19 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
 
-public class SkillCritical extends PassiveSkill {
+public class SkillRetrieveArrow extends PassiveSkill {
 
-    public SkillCritical(Heroes plugin) {
-        super(plugin, "Critical");
-        setDescription("Passive $1% chance to do $2 times damage.");
+    public SkillRetrieveArrow(Heroes plugin) {
+        super(plugin, "RetrieveArrow");
+        setDescription("Passive $1% chance to retrieve killing arrow.");
         setTypes(SkillType.COUNTER, SkillType.BUFF);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
@@ -28,10 +33,7 @@ public class SkillCritical extends PassiveSkill {
         double chance = (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE.node(), 0.2, false) +
                 (SkillConfigManager.getUseSetting(hero, this, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this))) * 100;
         chance = chance > 0 ? chance : 0;
-        double damageMod = (SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 0.2, false) +
-                (SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase", 0.0, false) * hero.getSkillLevel(this)));
-        damageMod = damageMod > 0 ? damageMod : 0;
-        String description = getDescription().replace("$1", chance + "").replace("$2", damageMod + "");
+        String description = getDescription().replace("$1", chance + "");
         return description;
     }
 
@@ -40,8 +42,6 @@ public class SkillCritical extends PassiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.CHANCE.node(), 0.2);
         node.set(Setting.CHANCE_LEVEL.node(), 0);
-        node.set("damage-multiplier", 2.0);
-        node.set("damage-multiplier-increase", 0);
         return node;
     }
     
@@ -51,19 +51,25 @@ public class SkillCritical extends PassiveSkill {
             this.skill = skill;
         }
         
-        @EventHandler
+        @EventHandler(priority=EventPriority.HIGH)
         public void onEntityDamage(WeaponDamageEvent event) {
-        	if(!(event.isCancelled())&&(event.getDamager() instanceof Hero)){
+        	if(!(event.isCancelled())&&(event.getDamager() instanceof Hero)&&(event.getCause().equals(DamageCause.PROJECTILE))){
         		Hero hero = (Hero) event.getDamager();
-           	  	if (hero.hasEffect("Critical")) {
+           	  	if (hero.hasEffect("RetrieveArrow")) {
                     double chance = (SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE.node(), 0.2, false) +
                             (SkillConfigManager.getUseSetting(hero, skill, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(skill)));
                     chance = chance > 0 ? chance : 0;
                     if (Math.random() <= chance) {
-                        double damageMod = (SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", 0.2, false) +
-                                (SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier-increase", 0.0, false) * hero.getSkillLevel(skill)));
-                        damageMod = damageMod > 0 ? damageMod : 0;
-                        event.setDamage((int) (event.getDamage() * damageMod));
+                    	if(event.getEntity() instanceof Player){
+                    		if(SkillRetrieveArrow.this.plugin.getCharacterManager().getHero((Player)event.getEntity()).getHealth() < event.getDamage()){
+                    			event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(262, 1));
+                    		}
+                    	}
+                    	else if(event.getEntity() instanceof LivingEntity){
+	                    	if(SkillRetrieveArrow.this.plugin.getCharacterManager().getMonster((LivingEntity)event.getEntity()).getHealth() < event.getDamage()){
+	                    		event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(262, 1));
+	                    	}
+                    	}
                     }
            	  	}
         	}

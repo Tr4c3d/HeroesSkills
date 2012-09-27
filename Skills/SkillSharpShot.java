@@ -96,16 +96,23 @@ public class SkillSharpShot extends ActiveSkill
 								Hero thero = SkillSharpShot.this.plugin.getCharacterManager().getHero((Player)event.getEntity());
 								if(Math.random() < chance){
 									thero.addEffect(new StunEffect(this.skill, duration));
-									event.setDamage((int) (thero.getMaxHealth()*amount*2));
+									event.setDamage((thero.getMaxHealth()*amount*2) > event.getDamage() ? ((int)(thero.getMaxHealth()*amount*2)) : event.getDamage());
 								}
-								else event.setDamage((int) (thero.getMaxHealth()*amount));
+								else{
+									event.setDamage((thero.getMaxHealth()*amount) > event.getDamage() ? ((int)(thero.getMaxHealth()*amount)) : event.getDamage());
+								}
 							}
 							else{
 								if(Math.random() < chance){
-									event.setDamage((int) (SkillSharpShot.this.plugin.getCharacterManager().getMonster((LivingEntity)event.getEntity()).getMaxHealth()*amount*2));
+									event.setDamage((int) (SkillSharpShot.this.plugin.getCharacterManager().getMonster((LivingEntity)event.getEntity()).getMaxHealth()*amount*2) > event.getDamage()/5 ?
+											((int) (SkillSharpShot.this.plugin.getCharacterManager().getMonster((LivingEntity)event.getEntity()).getMaxHealth()*amount*2)) : event.getDamage()/5);
 								}
-								else event.setDamage((int) (SkillSharpShot.this.plugin.getCharacterManager().getMonster((LivingEntity)event.getEntity()).getMaxHealth()*amount));
+								else{
+									event.setDamage((int) (SkillSharpShot.this.plugin.getCharacterManager().getMonster((LivingEntity)event.getEntity()).getMaxHealth()*amount) > event.getDamage()/5 ?
+											((int) (SkillSharpShot.this.plugin.getCharacterManager().getMonster((LivingEntity)event.getEntity()).getMaxHealth()*amount)) : event.getDamage()/5);
+								}
 							}
+							event.setDamage(event.getDamage()/5 > 1 ? event.getDamage()/5 : 1);
 						}
 						hero.removeEffect(hero.getEffect("SharpShotBuff"));
 					}
