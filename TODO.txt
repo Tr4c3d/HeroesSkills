@@ -1,8 +1,6 @@
 CREATE:
     Sell: Sells item in hand for given value
     HeavyCoins: Uses money to deal damage to target
-    FireWalk: Sets all the blocks the player walks on fire
-    SpiritRecovery: (Passive) heals extra HP and Mana while stopped
     Investigate: Deals ranged physical damage
     DoubleAttack: Can be cast a few seconds after a normal attack. Deals extra damage to target.
     ComboChain: Can be used a few seconds after DoubleAttack, Deals extra damage.

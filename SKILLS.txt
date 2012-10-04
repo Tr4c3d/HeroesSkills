@@ -6,6 +6,10 @@ Repulse: Pulls all entities arround you away
 SummonArrow: Summons a set amount of arrows
 SuperCharge: Shoots an extra-charged arrow
 BlastResistance: (Passive) Absorbs part of explosive damage
-SkillSharpShot: Same as SuperCharge but deals percentage damage and has chance to deal twice as much and stun
-SkillRetrieveArrow: (Passive) Chance of retrieving the arrow that killed the target
+SharpShot: Same as SuperCharge but deals percentage damage and has chance to deal twice as much and stun
+RetrieveArrow: (Passive) Chance of retrieving the arrow that killed the target
 Lunge: Deals damage to target and pushes it back a few blocks. Must be used with spade in hand
+FireTrap: Creats a trap at the target block. When a player walks into the trap, all blocks arround it will be set on fire
+Grenade: Throws a primed TNT in the direction the player is looking at
+FireWalk: Sets all blocks the player walk on fire
+SpiritRecovery: (Toggle-able Passive) heals extra HP and Mana while stopped
