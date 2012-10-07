@@ -7,9 +7,15 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
+
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillFirstAid extends ActiveSkill{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
 
     public SkillFirstAid(Heroes plugin) {
         super(plugin, "FirstAid");
@@ -23,7 +29,11 @@ public class SkillFirstAid extends ActiveSkill{
 
     @Override
     public String getDescription(Hero hero) {
-        double amount = (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 1.0, false));
+    	
+    	//AMOUNT
+        double amount = (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 1.0, false) +
+                (SkillConfigManager.getUseSetting(hero, this, "amount-increase", 0.0, false) * hero.getSkillLevel(this)));
+        if(hst != null) amount += (SkillConfigManager.getUseSetting(hero, this, "hst-amount", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         amount = amount > 0 ? amount : 0;
         String description = getDescription().replace("$1", amount + "%");
         
@@ -74,6 +84,7 @@ public class SkillFirstAid extends ActiveSkill{
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.AMOUNT.node(), 1);
         node.set("amount-increase", 0);
+        node.set("hst-amount", 0);
         return node;
     }
 
@@ -81,12 +92,11 @@ public class SkillFirstAid extends ActiveSkill{
     public SkillResult use(Hero hero, String[] args) {
         double amount = (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "amount-increase", 0.0, false) * hero.getSkillLevel(this)));
+        if(hst != null) amount += (SkillConfigManager.getUseSetting(hero, this, "hst-amount", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         amount = amount > 0 ? amount : 0;
         if(hero.getHealth()+(hero.getMaxHealth()*amount)<hero.getMaxHealth())hero.setHealth((int) (hero.getHealth()+(hero.getMaxHealth()*amount)));
         else hero.setHealth(hero.getMaxHealth());
         hero.syncHealth();
         return SkillResult.NORMAL;
     }
-    
-
 }

@@ -8,11 +8,16 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.Listener;
 
 public class SkillGrenade extends ActiveSkill implements Listener{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
 
     public SkillGrenade(Heroes plugin) {
         super(plugin, "Grenade");
@@ -30,6 +35,7 @@ public class SkillGrenade extends ActiveSkill implements Listener{
         //FORCE
         int force = (int) ((SkillConfigManager.getUseSetting(hero, this, "force", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "force-increase", 0.0, false) * hero.getSkillLevel(this))));
+        if(hst != null) force += (SkillConfigManager.getUseSetting(hero, this, "hst-force", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         force = force > 0 ? force : 0;
         if (force > 0) {
             description += " F:" + force + "s";
@@ -82,6 +88,7 @@ public class SkillGrenade extends ActiveSkill implements Listener{
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.AMOUNT.node(), 1);
         node.set("amount-increase", 0);
+        node.set("hst-force", 0);
         return node;
     }
 
@@ -89,6 +96,7 @@ public class SkillGrenade extends ActiveSkill implements Listener{
     public SkillResult use(Hero hero, String[] args) {
         double force = ((SkillConfigManager.getUseSetting(hero, this, "force", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "force-increase", 0.0, false) * hero.getSkillLevel(this))));
+        if(hst != null) force += (SkillConfigManager.getUseSetting(hero, this, "hst-force", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         force = force > 0 ? force : 0;
         TNTPrimed tnt = hero.getPlayer().getWorld().spawn(hero.getPlayer().getEyeLocation(), TNTPrimed.class);
         tnt.setVelocity(hero.getPlayer().getLocation().getDirection().normalize().multiply(force));

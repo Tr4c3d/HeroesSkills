@@ -8,6 +8,9 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -15,10 +18,12 @@ import org.bukkit.util.Vector;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillRepulse extends ActiveSkill{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
 
     public SkillRepulse(Heroes plugin) {
         super(plugin, "Repulse");
-        setDescription("kicks surrounding sand at enemy");
+        setDescription("Pushes target away");
         setUsage("/skill Repulse");
         setArgumentRange(0, 0);
         setIdentifiers(new String[]{"skill Repulse"});
@@ -33,6 +38,7 @@ public class SkillRepulse extends ActiveSkill{
         //FORCE
         int force = (int) (SkillConfigManager.getUseSetting(hero, this, "force", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "force-increase", 0.0, false) * hero.getSkillLevel(this)));
+        if(hst != null) force += (SkillConfigManager.getUseSetting(hero, this, "hst-force", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         force = force > 1 ? force : 1;
         if(force > 1) {
         	description += " F:" + force;
@@ -70,6 +76,7 @@ public class SkillRepulse extends ActiveSkill{
         //RADIUS
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 1, false) + 
         		(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false)) * hero.getSkillLevel(this);
+        if(hst != null) radius += (SkillConfigManager.getUseSetting(hero, this, "hst-radius", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         radius = radius > 1 ? radius : 1;
         description += " R:" + radius;
         
@@ -92,8 +99,10 @@ public class SkillRepulse extends ActiveSkill{
         ConfigurationSection node = super.getDefaultConfig();
         node.set("force", 5);
         node.set("force", 0);
+        node.set("hst-force", 0);
         node.set(Setting.RADIUS.node(), 1);
         node.set(Setting.RADIUS_INCREASE.node(), 0);
+        node.set("hst-radius", 0);
         return node;
     }
 
@@ -103,9 +112,11 @@ public class SkillRepulse extends ActiveSkill{
         
         int force = (int) (SkillConfigManager.getUseSetting(hero, this, "force", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "force-increase", 0.0, false) * hero.getSkillLevel(this)));
+        if(hst != null) force += (SkillConfigManager.getUseSetting(hero, this, "hst-force", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         force = force > 1 ? force : 1;
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 1, false) + 
         		(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false)) * hero.getSkillLevel(this);
+        if(hst != null) radius += (SkillConfigManager.getUseSetting(hero, this, "hst-force", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         radius = radius > 1 ? radius : 1;
 	    
 	    for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {

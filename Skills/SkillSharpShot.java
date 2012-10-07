@@ -12,6 +12,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -21,8 +23,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityShootBowEvent;
 
-public class SkillSharpShot extends ActiveSkill
-{
+public class SkillSharpShot extends ActiveSkill{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
+	
 	public SkillSharpShot(Heroes plugin)
 	{
 		super(plugin, "SharpShot");
@@ -41,10 +45,13 @@ public class SkillSharpShot extends ActiveSkill
 		ConfigurationSection node = super.getDefaultConfig();
 		node.set(Setting.AMOUNT.node(), 0.2);
 		node.set("amount-increase", 0.0);
+		node.set("hst-amount", 0);
 		node.set(Setting.CHANCE.node(), 0.1);
 		node.set(Setting.CHANCE_LEVEL.node(), 0.0);
+		node.set("hst-chance", 0);
 		node.set(Setting.DURATION.node(), 1000);
 		node.set(Setting.DURATION_INCREASE.node(), 0);
+		node.set("hst-duration", 0);
 		return node;
 	}
 
@@ -84,14 +91,17 @@ public class SkillSharpShot extends ActiveSkill
 					Hero hero = (Hero) event.getDamager();
 					float amount = (float) (SkillConfigManager.getUseSetting(hero, this.skill, Setting.AMOUNT.node(), 0.2, false) +
 							(SkillConfigManager.getUseSetting(hero, this.skill, "amount-increase", 0.0, false) * hero.getSkillLevel(this.skill)));
+					if(hst != null) amount += (SkillConfigManager.getUseSetting(hero, skill, "hst-amount", 0.0, false) * (hst.getSkillLevel(hero, skill) - 1));
 					amount = amount > 0 ? amount : 0;
 					float chance = (float) (SkillConfigManager.getUseSetting(hero, this.skill, Setting.CHANCE.node(), 0.1, false) +
 							(SkillConfigManager.getUseSetting(hero, this.skill, Setting.CHANCE_LEVEL.node(), 0.0, false) * hero.getSkillLevel(this.skill)));
+					if(hst != null) chance += (SkillConfigManager.getUseSetting(hero, skill, "hst-chance", 0.0, false) * (hst.getSkillLevel(hero, skill) - 1));
 					chance = chance > 0 ? chance : 0;
 					if(hero.hasEffect("SharpShotBuff")){
 						if(event.getEntity() instanceof LivingEntity){
 							int duration = (SkillConfigManager.getUseSetting(hero, this.skill, Setting.DURATION.node(), 1000, false) +
 									(SkillConfigManager.getUseSetting(hero, this.skill, Setting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this.skill)));
+							if(hst != null) duration += (SkillConfigManager.getUseSetting(hero, skill, "hst-duration", 0.0, false) * (hst.getSkillLevel(hero, skill) - 1));
 							if(event.getEntity() instanceof Player){
 								Hero thero = SkillSharpShot.this.plugin.getCharacterManager().getHero((Player)event.getEntity());
 								if(Math.random() < chance){

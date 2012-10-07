@@ -7,11 +7,17 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
+
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 public class SkillSummonArrow extends ActiveSkill{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
 
     public SkillSummonArrow(Heroes plugin) {
         super(plugin, "SummonArrow");
@@ -25,8 +31,12 @@ public class SkillSummonArrow extends ActiveSkill{
 
     @Override
     public String getDescription(Hero hero) {
-        int amount = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 1, false));
-        amount = amount > 0 ? amount : 0;
+    	
+    	//AMOUNT
+        int amount = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 1, false) + 
+        		SkillConfigManager.getUseSetting(hero, this, "amount-increase", 0, false) * hero.getSkillLevel(this));
+        if(hst != null) amount += (SkillConfigManager.getUseSetting(hero, this, "hst-amount", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
+        amount = amount > 1 ? amount : 1;
         String description = getDescription().replace("$1", amount + "");
         
         //COOLDOWN
@@ -76,6 +86,7 @@ public class SkillSummonArrow extends ActiveSkill{
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.AMOUNT.node(), 1);
         node.set("amount-increase", 0);
+        node.set("hst-amount", 0);
         return node;
     }
 
@@ -84,7 +95,8 @@ public class SkillSummonArrow extends ActiveSkill{
         Player player = hero.getPlayer();
         int amount = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 1, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "amount-increase", 0.0, false) * hero.getSkillLevel(this)));
-        amount = amount > 0 ? amount : 0;
+        if(hst != null) amount += (SkillConfigManager.getUseSetting(hero, this, "hst-amount", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
+        amount = amount > 1 ? amount : 1;
         ItemStack is = null;
         is = new ItemStack(262, amount);
         player.getInventory().addItem(is);

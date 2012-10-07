@@ -9,6 +9,9 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -17,10 +20,12 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillKickSand extends TargettedSkill{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
 
     public SkillKickSand(Heroes plugin) {
         super(plugin, "KickSand");
-        setDescription("kicks surrounding sand at enemy");
+        setDescription("Kicks surrounding sand at enemy, dealing Earth damage");
         setUsage("/skill KickSand");
         setArgumentRange(0, 0);
         setIdentifiers(new String[]{"skill KickSand"});
@@ -35,6 +40,7 @@ public class SkillKickSand extends TargettedSkill{
         //DAMAGE
         int damage = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE.node(), 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this)));
+        if(hst != null) damage += (SkillConfigManager.getUseSetting(hero, this, "hst-damage", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         damage = damage > 0 ? damage : 0;
         if(damage > 0) {
         	description += " D:" + damage;
@@ -71,6 +77,7 @@ public class SkillKickSand extends TargettedSkill{
         //RADIUS
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 1, false) + 
         		(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false)) * hero.getSkillLevel(this);
+        if(hst != null) radius += (SkillConfigManager.getUseSetting(hero, this, "hst-radius", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         radius = radius > 1 ? radius : 1;
         description += " R:" + radius;
         
@@ -93,8 +100,10 @@ public class SkillKickSand extends TargettedSkill{
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.DAMAGE.node(), 5);
         node.set(Setting.DAMAGE_INCREASE.node(), 0);
+        node.set("hst-damage", 0);
         node.set(Setting.RADIUS.node(), 1);
         node.set(Setting.RADIUS_INCREASE.node(), 0);
+        node.set("hst-radius", 0);
         return node;
     }
 
@@ -108,9 +117,11 @@ public class SkillKickSand extends TargettedSkill{
         
         int damage = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE.node(), 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this)));
+        if(hst != null) damage += (SkillConfigManager.getUseSetting(hero, this, "hst-damage", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         damage = damage > 0 ? damage : 0;
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 1, false) + 
         		(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false)) * hero.getSkillLevel(this);
+        if(hst != null) radius += (SkillConfigManager.getUseSetting(hero, this, "hst-radius", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         radius = radius > 1 ? radius : 1;
 	    
         if(player.getWorld().getBlockTypeIdAt(player.getLocation().getBlockX(), player.getLocation().getBlockY()-1, player.getLocation().getBlockZ()) == 12){

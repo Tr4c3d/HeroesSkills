@@ -9,6 +9,9 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
 
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -16,6 +19,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillLunge extends TargettedSkill{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
 
     public SkillLunge(Heroes plugin) {
         super(plugin, "Lunge");
@@ -34,6 +39,7 @@ public class SkillLunge extends TargettedSkill{
         //DAMAGE
         int damage = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE.node(), 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this)));
+        if(hst != null) damage += (SkillConfigManager.getUseSetting(hero, this, "hst-damage", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         damage = damage > 0 ? damage : 0;
         if(damage > 0) {
         	description += " D:" + damage;
@@ -92,6 +98,7 @@ public class SkillLunge extends TargettedSkill{
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.DAMAGE.node(), 5);
         node.set(Setting.DAMAGE_INCREASE.node(), 0);
+        node.set("hst-damage", 0);
         return node;
     }
 
@@ -105,6 +112,7 @@ public class SkillLunge extends TargettedSkill{
         
         int damage = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE.node(), 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, Setting.DAMAGE_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this)));
+        if(hst != null) damage += (SkillConfigManager.getUseSetting(hero, this, "hst-damage", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         damage = damage > 0 ? damage : 0;
 	    
         if((player.getItemInHand().getType().equals(Material.WOOD_SPADE)) ||

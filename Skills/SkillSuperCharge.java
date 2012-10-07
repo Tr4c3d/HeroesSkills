@@ -8,6 +8,9 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -16,8 +19,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 
-public class SkillSuperCharge extends ActiveSkill
-{
+public class SkillSuperCharge extends ActiveSkill{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
+	
 	public SkillSuperCharge(Heroes plugin)
 	{
 		super(plugin, "SuperCharge");
@@ -36,6 +41,7 @@ public class SkillSuperCharge extends ActiveSkill
 		ConfigurationSection node = super.getDefaultConfig();
 		node.set("multiplier", 2.0);
 		node.set("multiplier-increase", 0.0);
+		node.set("hst-multiplier", 0.0);
 		return node;
 	}
 
@@ -77,6 +83,7 @@ public class SkillSuperCharge extends ActiveSkill
 			if (hero.hasEffect("SuperChargeBuff")) {        
 				float multiplier = (float) (SkillConfigManager.getUseSetting(hero, this.skill, "multiplier", 2.0, false) +
 						(SkillConfigManager.getUseSetting(hero, this.skill, "multiplier-increase", 0.0, false) * hero.getSkillLevel(this.skill)));
+				if(hst != null) multiplier += (SkillConfigManager.getUseSetting(hero, skill, "hst-amount", 0.0, false) * (hst.getSkillLevel(hero, skill) - 1));
 				multiplier = multiplier > 0 ? multiplier : 0;
 				event.getProjectile().setVelocity(event.getProjectile().getVelocity().multiply(multiplier));
 				hero.removeEffect(hero.getEffect("SuperChargeBuff"));

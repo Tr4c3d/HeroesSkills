@@ -8,7 +8,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Setting;
+
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -21,6 +24,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SkillFireTrap extends ActiveSkill implements Listener{
 
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
 	public HashSet<Block> getTraps = new HashSet<Block>();
 
     public SkillFireTrap(Heroes plugin) {
@@ -40,6 +44,7 @@ public class SkillFireTrap extends ActiveSkill implements Listener{
         //MAX_DISTANCE
         int maxDistance = (int) ((SkillConfigManager.getUseSetting(hero, this, "max-distance", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "max-distance-increase", 0.0, false) * hero.getSkillLevel(this))));
+        if(hst != null) maxDistance += (SkillConfigManager.getUseSetting(hero, this, "hst-max-distance", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         maxDistance = maxDistance > 0 ? maxDistance : 0;
         if (maxDistance > 0) {
             description += " D:" + maxDistance + "s";
@@ -92,6 +97,7 @@ public class SkillFireTrap extends ActiveSkill implements Listener{
         ConfigurationSection node = super.getDefaultConfig();
         node.set(Setting.AMOUNT.node(), 1);
         node.set("amount-increase", 0);
+        node.set("hst-max-dintance", 0);
         return node;
     }
 
@@ -99,9 +105,13 @@ public class SkillFireTrap extends ActiveSkill implements Listener{
     public SkillResult use(Hero hero, String[] args) {
         int maxDistance = (int) ((SkillConfigManager.getUseSetting(hero, this, "max-distance", 1.0, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "max-distance-increase", 0.0, false) * hero.getSkillLevel(this))));
+        if(hst != null) maxDistance += (SkillConfigManager.getUseSetting(hero, this, "hst-max-distance", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         maxDistance = maxDistance > 0 ? maxDistance : 0;
     	Block block = hero.getPlayer().getTargetBlock(null, maxDistance);
-    	getTraps.add(block);
+    	if(block != null){
+    		Messaging.send(hero.getPlayer(), "You put down a firetrap!");
+    		getTraps.add(block);
+    	}
     	return SkillResult.NORMAL;
     }
     
@@ -110,6 +120,7 @@ public class SkillFireTrap extends ActiveSkill implements Listener{
     	Player player = event.getPlayer();
     	Block block = player.getLocation().getBlock();
     	if(getTraps.contains(block.getRelative(0, -1, 0))){
+    		Messaging.send(player, "You fell on a firetrap!");
     		block.setType(Material.FIRE);
     		block.getRelative(-1, 0, -1).setType(Material.FIRE);
     		block.getRelative(-1, 0, 0).setType(Material.FIRE);

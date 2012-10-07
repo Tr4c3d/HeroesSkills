@@ -8,6 +8,9 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Setting;
 
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -15,6 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class SkillHeal extends TargettedSkill{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
 
     public SkillHeal(Heroes plugin) {
         super(plugin, "Heal");
@@ -30,12 +35,13 @@ public class SkillHeal extends TargettedSkill{
     public String getDescription(Hero hero) {
         String description = getDescription();
         
-        //DAMAGE
-        float health = (float) (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH.node(), 0.1, false) +
-                (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this)));
-        health = health > 0 ? health : 0;
-        if(health > 0) {
-        	description = getDescription().replace("$1", health*100 + "%");
+        //AMOUNT
+        float amount = (float) (SkillConfigManager.getUseSetting(hero, this, Setting.AMOUNT.node(), 0.1, false) +
+                (SkillConfigManager.getUseSetting(hero, this, "amount-increase", 0.0, false) * hero.getSkillLevel(this)));
+        if(hst != null) amount += (SkillConfigManager.getUseSetting(hero, this, "hst-amount", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
+        amount = amount > 0 ? amount : 0;
+        if(amount > 0) {
+        	description = getDescription().replace("$1", amount*100 + "%");
         }
         
         //COOLDOWN
@@ -69,6 +75,7 @@ public class SkillHeal extends TargettedSkill{
         //RADIUS
         int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 1, false) + 
         		(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false)) * hero.getSkillLevel(this);
+        if(hst != null) radius += (SkillConfigManager.getUseSetting(hero, this, "hst-radius", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
         radius = radius > 1 ? radius : 1;
         description += " R:" + radius;
         
@@ -89,10 +96,12 @@ public class SkillHeal extends TargettedSkill{
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(Setting.HEALTH.node(), 0.1);
-        node.set(Setting.HEALTH_INCREASE.node(), 0.0);
+        node.set(Setting.AMOUNT.node(), 0.1);
+        node.set("amount-increase", 0.0);
+        node.set("hst-amount", 0);
         node.set(Setting.RADIUS.node(), 1);
         node.set(Setting.RADIUS_INCREASE.node(), 0);
+        node.set("hst-radius", 0);
         return node;
     }
 
@@ -102,17 +111,20 @@ public class SkillHeal extends TargettedSkill{
         if (target instanceof Player) {
 	        Player tplayer = (Player) target;
 	        Hero thero = plugin.getCharacterManager().getHero((Player) target);
-	        int health = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH.node(), 0.1, false) +
+	        
+	        int amount = (int) (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH.node(), 0.1, false) +
 	                (SkillConfigManager.getUseSetting(hero, this, Setting.HEALTH_INCREASE.node(), 0.0, false) * hero.getSkillLevel(this)));
-	        health = health > 0 ? health : 0;
+	        if(hst != null) amount += (SkillConfigManager.getUseSetting(hero, this, "hst-amount", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
+	        amount = amount > 0 ? amount : 0;
 	        int radius = SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS.node(), 1, false) + 
 	        		(SkillConfigManager.getUseSetting(hero, this, Setting.RADIUS_INCREASE.node(), 0, false)) * hero.getSkillLevel(this);
+	        if(hst != null) radius += (SkillConfigManager.getUseSetting(hero, this, "hst-radius", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
 	        radius = radius > 1 ? radius : 1;
 		    
 	        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
 		        if (entity == target) {
-				    if(health > 0) {
-				    	thero.setHealth(tplayer.getHealth()*health);
+				    if(amount > 0) {
+				    	thero.setHealth(tplayer.getHealth()*amount);
 				    	thero.syncHealth();
 				       	tplayer.getLocation().getWorld().playEffect(player.getLocation(), Effect.SMOKE, 0);
 				        broadcastExecuteText(hero, target);

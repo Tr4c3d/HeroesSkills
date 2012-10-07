@@ -10,6 +10,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Setting;
 
+import me.Whatshiywl.heroesskilltree.HeroesSkillTree;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,6 +24,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SkillFireWalk extends ActiveSkill implements Listener{
+	
+	public HeroesSkillTree hst = (HeroesSkillTree)Bukkit.getServer().getPluginManager().getPlugin("HeroesSkillTree");
     private String applyText;
     private String expireText;
 
@@ -40,8 +44,9 @@ public class SkillFireWalk extends ActiveSkill implements Listener{
         String description = getDescription();
         
         //DURATION
-        float duration = (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 2000, false)
-                - SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this)) / 1000;
+        float duration = (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION.node(), 2000, false) +
+                SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE.node(), 0, false) * hero.getSkillLevel(this)) / 1000;
+        if(hst != null) duration += (SkillConfigManager.getUseSetting(hero, this, "hst-duration", 0.0, false) * (hst.getSkillLevel(hero, this) - 1) / 1000);
         if (duration > 0) {
             description = getDescription().replace("$1", duration + "s");
         }
@@ -95,6 +100,7 @@ public class SkillFireWalk extends ActiveSkill implements Listener{
         node.set("off-text", "%hero% stops to %skill%!");
         node.set(Setting.DURATION.node(), 2000);
         node.set(Setting.DURATION_INCREASE.node(), 0);
+        node.set("hst-duration", 0);
         return node;
     }
     
@@ -113,6 +119,7 @@ public class SkillFireWalk extends ActiveSkill implements Listener{
     	else{
 	        int duration = (int) ((SkillConfigManager.getUseSetting(hero, this, Setting.DURATION, 2000, false) +
 	                (SkillConfigManager.getUseSetting(hero, this, Setting.DURATION_INCREASE, 0, false) * hero.getSkillLevel(this))));
+	        if(hst != null) duration += (SkillConfigManager.getUseSetting(hero, this, "hst-duration", 0.0, false) * (hst.getSkillLevel(hero, this) - 1));
 	        duration = duration > 0 ? duration : 0;
 	        hero.addEffect(new FireWalkingEffect(this, duration));
     	}
