@@ -13,3 +13,6 @@ FireTrap: Creats a trap at the target block. When a player walks into the trap, 
 Grenade: Throws a primed TNT in the direction the player is looking at
 FireWalk: Sets all blocks the player walk on fire
 SpiritRecovery: (Toggle-able Passive) heals extra HP and Mana while stopped
+DoubleAttack: (Passive) Chance of doing extra damage after dealing consecutive attacks
+ComboChain: (Passive) Chance of doing extra damage after DoubleCombo
+ComboFinish: (Passive) Chance of doing extra damage after ComboChain

@@ -2,9 +2,6 @@ CREATE:
     Sell: Sells item in hand for given value
     HeavyCoins: Uses money to deal damage to target
     Investigate: Deals ranged physical damage
-    DoubleAttack: Can be cast a few seconds after a normal attack. Deals extra damage to target.
-    ComboChain: Can be used a few seconds after DoubleAttack, Deals extra damage.
-    FinishCombo: Can be used a few seconds after FinishCombo. Deals extra damage
     AsuraStrike: Can be used a few seconds after FinishCombo. Drains all remaining Mana from caster and deals great damage based on the amount ot Mana drained.
     CreatePoison: Gives the player a Potion of Poison II Extended
 MODIFY:
